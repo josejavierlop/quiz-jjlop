@@ -68,7 +68,7 @@ exports.create = function(req, res){
     } else {
     quiz // save: guarda en DB campos pregunta y respuesta de quiz
     .save({fields: ["pregunta", "respuesta"]})
-    .then( function(){ res.redirect('/quizes')}) ;
+    .then( function(){ res.redirect('/quizes')}).catch(function(error){next(error)});
     }
 };
 
@@ -92,6 +92,13 @@ exports.update = function(req, res) {
     } else {
     req.quiz // save: guarda en DB campos pregunta y respuesta de quiz
     .save({fields: ["pregunta", "respuesta"]})
-    .then( function(){ res.redirect('/quizes')}) ;
+    .then( function(){ res.redirect('/quizes')}).catch(function(error){next(error)});
     }
+};
+
+// DELETE /quizes/:id
+exports.destroy = function(req, res) {
+  req.quiz.destroy().then( function() {
+    res.redirect('/quizes');
+  }).catch(function(error){next(error)});
 };
