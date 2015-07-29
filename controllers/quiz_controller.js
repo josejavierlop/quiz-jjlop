@@ -2,8 +2,14 @@ var models = require('../models/models.js');
 
 // Autoload :id
 exports.load = function(req, res, next, quizId) {
-  models.Quiz.find(quizId).then(
-    function(quiz) {
+  models.Quiz.find({
+            where: {
+                id: Number(quizId)
+            },
+            include: [{
+                model: models.Comment
+            }]
+        }).then(function(quiz) {
       if (quiz) {
         req.quiz = quiz;
         next();
@@ -19,7 +25,10 @@ exports.index = function(req, res) {
     search = "%" + req.query.search + "%";
     search = search.trim().replace(/\s/g,"%");
   }
-  models.Quiz.findAll({where:["upper(pregunta) like ?", search.toUpperCase()], order: 'pregunta ASC'}).then(
+  models.Quiz.findAll({where:["upper(pregunta) like ?", search.toUpperCase()],
+            include: [{
+                model: models.Comment
+            }], order: 'pregunta ASC'}).then(
     function(quizes) {
       res.render('quizes/index', { quizes: quizes, errors: []});
     }
