@@ -25,6 +25,27 @@ app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Helpers dinamicos:
+app.use('*', function(req, res, next){
+  if(req.session && req.session.time1 && req.session.time2){
+     req.session.time1 = req.session.time2;
+  }
+
+  if(req.session && req.session.time1){
+    req.session.time2 = Date.now();
+    var diff = (req.session.time2 - req.session.time1);
+    if(diff>120000){
+      delete req.session.user;
+      next();
+    }else{
+      next();
+    }
+  }else{
+    req.session.time1 = Date.now();
+    next();
+  }
+  
+});
+
 app.use(function(req, res, next) {
   // guardar path en session.redir para despues de login
   if (!req.path.match(/\/login|\/logout/)) {
